@@ -18,9 +18,8 @@ import (
 )
 
 const (
-	defaultFilecount         = 10240
-	defaultIndexMetaFileName = ".index_meta"
-	defaultTpsResultFileName = "tps_info"
+	defaultFilecount         = 2
+	defaultIndexMetaFileName = "index.meta"
 )
 
 type Meta struct {
@@ -119,7 +118,6 @@ func (fetcher *Fetcher) flush(path string) error {
 }
 func (fetcher *Fetcher) loadIndex() bool {
 	indexMetaPath := fmt.Sprintf("%s/%s", fetcher.indexPath, defaultIndexMetaFileName)
-	fmt.Printf("......start to load %s \n", indexMetaPath)
 	b, err := ioutil.ReadFile(indexMetaPath)
 	if err != nil {
 		fmt.Println(err)
@@ -277,7 +275,7 @@ func (fetcher *Fetcher) PrintMetric(msg string) int {
 		fmt.Printf("###################################%v-%s#################################\n", time.Now().Format("2006-01-02 15:04:05"), msg)
 		format := format.NewFormat()
 		defer format.Flush()
-		fmt.Fprintln(format, "indexfile\ttps\tfiles\tlength(mb)\tseconds\tmilliseconds\t\tstart\t\tend")
+		fmt.Fprintln(format, "index\ttps\tfiles\tlength(mb)\tseconds\t\tstart\t\tend")
 		var milliseconds uint64
 		for _, m := range fetcher.metrics {
 			if milliseconds < m.Milliseconds {
@@ -287,7 +285,7 @@ func (fetcher *Fetcher) PrintMetric(msg string) int {
 			tps := float64(m.FileCount) / seconds
 			atomic.AddUint64(&FileCount, m.FileCount)
 			atomic.AddUint64(&FileLength, m.FileLength)
-			fmt.Fprintf(format, "%s\t%.2f\t%d\t%.2f\t%.5f\t%d\t\t%v\t\t%v\n", m.Name, tps, m.FileCount, float64(m.FileLength)/1024/1024, seconds, m.Milliseconds, m.Start.Format("2006-01-02 15:04:05"), m.End.Format("2006-01-02 15:04:05"))
+			fmt.Fprintf(format, "%s\t%.2f\t%d\t%.2f\t%.5f\t%d\t\t%v\t\t%v\n", m.Name, tps, m.FileCount, float64(m.FileLength)/1024/1024, seconds, m.Start.Format("2006-01-02 15:04:05"), m.End.Format("2006-01-02 15:04:05"))
 		}
 		seconds := float64(milliseconds) / 1000
 		fmt.Fprintln(format, "\ntotal files\t\ttotal length(mb)\t\ttotal tps\t\tfinish jobs\t\ttotal jobs")
