@@ -285,7 +285,7 @@ func (fetcher *Fetcher) PrintMetric(msg string) int {
 			tps := float64(m.FileCount) / seconds
 			atomic.AddUint64(&FileCount, m.FileCount)
 			atomic.AddUint64(&FileLength, m.FileLength)
-			fmt.Fprintf(format, "%s\t%.2f\t%d\t%.2f\t%.5f\t%d\t\t%v\t\t%v\n", m.Name, tps, m.FileCount, float64(m.FileLength)/1024/1024, seconds, m.Start.Format("2006-01-02 15:04:05"), m.End.Format("2006-01-02 15:04:05"))
+			fmt.Fprintf(format, "%s\t%.2f\t%d\t%.2f\t%.5f\t\t%v\t\t%v\n", m.Name, tps, m.FileCount, float64(m.FileLength)/1024/1024, seconds, m.Start.Format("2006-01-02 15:04:05"), m.End.Format("2006-01-02 15:04:05"))
 		}
 		seconds := float64(milliseconds) / 1000
 		fmt.Fprintln(format, "\ntotal files\t\ttotal length(mb)\t\ttotal tps\t\tfinish jobs\t\ttotal jobs")
