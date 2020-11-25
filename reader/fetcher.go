@@ -78,7 +78,7 @@ func NewFetcher(cf *conf.Conf, root string) (*Fetcher, error) {
 		indexPath: cf.IndexPath,
 		ticker:    time.Second * time.Duration(cf.Ticker),
 	}
-	fetcher.reader = NewReader(cf.ShowDetail,cf.ReadBufferSize)
+	fetcher.reader = NewReader(cf.OpType,cf.ShowDetail,cf.ReadBufferSize)
 	return fetcher, nil
 }
 func (fetcher *Fetcher) initIndexFile() error {

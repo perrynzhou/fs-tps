@@ -9,9 +9,10 @@ import (
 type Reader struct {
 	bufferSize int
 	showDetail bool
+	opType     string
 }
 
-func NewReader(showDetail bool, bufferSize int) *Reader {
+func NewReader(opType string, showDetail bool, bufferSize int) *Reader {
 
 	if bufferSize < defaultReadMinBufferSize {
 		bufferSize = defaultReadMinBufferSize
@@ -22,6 +23,7 @@ func NewReader(showDetail bool, bufferSize int) *Reader {
 	return &Reader{
 		bufferSize: bufferSize,
 		showDetail: showDetail,
+		opType:     opType,
 	}
 }
 func (reader *Reader) Read(path string, handle func(b []byte) error) error {
@@ -37,17 +39,21 @@ func (reader *Reader) Read(path string, handle func(b []byte) error) error {
 		}(f, path, start)
 	}
 	rb := make([]byte, reader.bufferSize)
-	os.Stat(path)
-	for {
-		switch nr, err := f.Read(rb[:]); true {
-		case nr < 0:
-			return err
-		case nr == 0:
-			return nil
-		case nr > 0:
-			if handle != nil {
-				handle(rb)
+	if reader.opType == "meta" {
+		os.Stat(path)
+	} else {
+		for {
+			switch nr, err := f.Read(rb[:]); true {
+			case nr < 0:
+				return err
+			case nr == 0:
+				return nil
+			case nr > 0:
+				if handle != nil {
+					handle(rb)
+				}
 			}
 		}
 	}
+	return nil
 }

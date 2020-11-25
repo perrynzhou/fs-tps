@@ -13,6 +13,8 @@ type Conf struct {
 	ShowDetail     bool   `json:"show_detail"`
 	Suffix         string `json:"suffix"`
 	Ticker         int    `json:"output_summary_ticker"`
+	//if test meta Optype=meta;else data
+	OpType         string  `json:"data"`
 }
 
 func NewConf(path string) (*Conf, error) {
