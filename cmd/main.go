@@ -28,15 +28,13 @@ func genConfTemplate() error {
 	}
 	if os.IsNotExist(err) {
 		cf := &conf.Conf{
-			Address:    "127.0.0.1",
-			Port:       5678,
-			Volume:     "dht_vol",
-			IndexName:  "index",
-			IndexPath:  "/tmp",
-			Count:      1024,
-			OutputFlag: false,
-			BufferSize: 8192,
-			Suffix:     ".h",
+			IndexName:      "index",
+			IndexPath:      "/tmp",
+			Count:          4,
+			ReadBufferSize: 8192,
+			ShowDetail:     false,
+			Suffix:         "",
+			Ticker:         4,
 		}
 		b, err := json.MarshalIndent(cf, " ", " ")
 		if err != nil {
@@ -62,7 +60,7 @@ func main() {
 	fetcher.Run()
 	defer fetcher.PrintMetric("All Jobs Info")
 	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
 	fmt.Printf("##########main pid:%d##########\n", os.Getpid())
 	for {
 		select {
