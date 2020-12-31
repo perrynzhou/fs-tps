@@ -6,17 +6,15 @@ import (
 )
 
 type Conf struct {
-	Address    string `json:"addr"`
-	Port       int    `json:"port"`
-	Volume     string `json:"volume"`
-	IndexName  string `json:"index_name"`
-	IndexPath  string `json:"index_path"`
-	Count      uint64 `json:"count"`
-	OutputFlag bool   `json:"output_flag"`
-	ApiEnable  bool   `json:"api_enable"`
-	BufferSize int    `json:"buffer_size"`
-	Suffix     string `json:"suffix"`
-	Ticker     int    `json:"ticker"`
+	IndexName      string `json:"index_name"`
+	IndexPath      string `json:"index_path"`
+	Count          uint64 `json:"count"`
+	ReadBufferSize int    `json:"read_buffer_size"`
+	ShowDetail     bool   `json:"show_detail"`
+	Suffix         string `json:"suffix"`
+	Ticker         int    `json:"output_summary_ticker"`
+	//if test meta Optype=meta;else data
+	OpType string `json:"op_type"`
 }
 
 func NewConf(path string) (*Conf, error) {

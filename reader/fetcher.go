@@ -49,8 +49,7 @@ type Fetcher struct {
 	in          chan *Meta
 	out         chan *Meta
 	wg          *sync.WaitGroup
-	flag        bool
-	reader      Reader
+	reader      IReader
 	suffix      string
 	ticker      time.Duration
 	saveTpsInfo *format.FileFormat
@@ -75,22 +74,11 @@ func NewFetcher(cf *conf.Conf, root string) (*Fetcher, error) {
 		done:      make(chan struct{}),
 		metrics:   make([]*metric.Metric, 0),
 		wg:        &sync.WaitGroup{},
-		flag:      cf.OutputFlag,
 		suffix:    cf.Suffix,
 		indexPath: cf.IndexPath,
 		ticker:    time.Second * time.Duration(cf.Ticker),
 	}
-	fetcher.reader = NewFuseReader(cf.BufferSize)
-	if cf.ApiEnable {
-		fetcher.reader = nil
-		/*NewApiReader(cf.Address, cf.Volume, cf.Port)
-		if err != nil {
-			fmt.Println(err)
-			return nil, err
-		}
-
-		*/
-	}
+	fetcher.reader = NewReader(cf.OpType, cf.ShowDetail, cf.ReadBufferSize)
 	return fetcher, nil
 }
 func (fetcher *Fetcher) initIndexFile() error {
@@ -165,28 +153,29 @@ func (fetcher *Fetcher) createIndex() error {
 			if f.IsDir() {
 				return nil
 			}
-			if len(fetcher.suffix) > 0 && !strings.HasSuffix(path, fetcher.suffix) {
-				return nil
-			}
-			atomic.AddUint64(&meta.Count, 1)
-			atomic.AddUint64(&meta.Length, uint64(f.Size()))
-			fetcher.flush(path)
-			if meta.Count >= fetcher.count {
-				fmt.Printf("finish append index to  %s.%d,count:%d\n", fetcher.name, fetcher.index, meta.Count)
-				metas = append(metas, meta)
-				fetcher.in <- meta
-				atomic.AddUint64(&fetcher.index, 1)
-				meta = &Meta{
-					Count:  0,
-					Length: 0,
-					Index:  fetcher.index,
-				}
-				if err = fetcher.initIndexFile(); err != nil {
-					fmt.Println(err)
-					return err
+			if len(fetcher.suffix) == 0 || (len(fetcher.suffix) > 0 && strings.HasSuffix(path, fetcher.suffix)) {
+				atomic.AddUint64(&meta.Count, 1)
+				atomic.AddUint64(&meta.Length, uint64(f.Size()))
+				fetcher.flush(path)
+				if meta.Count >= fetcher.count {
+					fmt.Printf("finish append index to  %s.%d,count:%d\n", fetcher.name, fetcher.index, meta.Count)
+					metas = metas[:0]
+					metas = append(metas, meta)
+					fetcher.in <- meta
+					atomic.AddUint64(&fetcher.index, 1)
+					meta = &Meta{
+						Count:  0,
+						Length: 0,
+						Index:  fetcher.index,
+					}
+					if err = fetcher.initIndexFile(); err != nil {
+						fmt.Println(err)
+						return err
+					}
 				}
 			}
 			return nil
+
 		})
 	if err != nil {
 		return err
@@ -306,7 +295,7 @@ func (fetcher *Fetcher) handleIndexFile(meta *Meta /*,wg *sync.WaitGroup */) err
 	meta.Start = time.Now()
 	for scanner.Scan() {
 		filePath := scanner.Text()
-		if err = fetcher.reader.Read(filePath, fetcher.flag, nil); err != nil {
+		if err = fetcher.reader.Read(filePath, nil); err != nil {
 			atomic.SwapUint64(&meta.Count, meta.Count-1)
 			continue
 		}
