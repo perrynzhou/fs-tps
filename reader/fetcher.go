@@ -78,7 +78,7 @@ func NewFetcher(cf *conf.Conf, root string) (*Fetcher, error) {
 		indexPath: cf.IndexPath,
 		ticker:    time.Second * time.Duration(cf.Ticker),
 	}
-	fetcher.reader = NewReader(cf.OpType,cf.ShowDetail,cf.ReadBufferSize)
+	fetcher.reader = NewReader(cf.OpType, cf.ShowDetail, cf.ReadBufferSize)
 	return fetcher, nil
 }
 func (fetcher *Fetcher) initIndexFile() error {
@@ -153,7 +153,7 @@ func (fetcher *Fetcher) createIndex() error {
 			if f.IsDir() {
 				return nil
 			}
-			if len(fetcher.suffix)==0 ||(len(fetcher.suffix) > 0 && strings.HasSuffix(path, fetcher.suffix)) {
+			if len(fetcher.suffix) == 0 || (len(fetcher.suffix) > 0 && strings.HasSuffix(path, fetcher.suffix)) {
 				atomic.AddUint64(&meta.Count, 1)
 				atomic.AddUint64(&meta.Length, uint64(f.Size()))
 				fetcher.flush(path)
@@ -174,7 +174,7 @@ func (fetcher *Fetcher) createIndex() error {
 					}
 				}
 			}
-				return nil
+			return nil
 
 		})
 	if err != nil {

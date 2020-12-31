@@ -6,5 +6,5 @@ const (
 )
 
 type IReader interface {
-	Read(path string,  handle func(b []byte,) error) error
+	Read(path string, handle func(b []byte) error) error
 }

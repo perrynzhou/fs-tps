@@ -14,7 +14,7 @@ type Conf struct {
 	Suffix         string `json:"suffix"`
 	Ticker         int    `json:"output_summary_ticker"`
 	//if test meta Optype=meta;else data
-	OpType         string  `json:"op_type"`
+	OpType string `json:"op_type"`
 }
 
 func NewConf(path string) (*Conf, error) {
