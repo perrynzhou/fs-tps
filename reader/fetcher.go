@@ -78,7 +78,7 @@ func NewFetcher(cf *conf.Conf, root string) (*Fetcher, error) {
 		indexPath: cf.IndexPath,
 		ticker:    time.Second * time.Duration(cf.Ticker),
 	}
-	fetcher.reader = NewReader(cf.OpType, cf.ShowDetail, cf.ReadBufferSize)
+	fetcher.reader = NewReader(cf.OpType, cf.ReadBufferSize)
 	return fetcher, nil
 }
 func (fetcher *Fetcher) initIndexFile() error {
@@ -193,6 +193,8 @@ func (fetcher *Fetcher) createIndex() error {
 				fmt.Printf(".....new %s success\n", indexMetaPath)
 			}
 		}
+
+
 	}
 	fmt.Printf("finish  append index to  %s.%d,count:%d\n", fetcher.name, fetcher.index, meta.Count)
 	return nil
