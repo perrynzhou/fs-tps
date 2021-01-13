@@ -12,7 +12,7 @@ type Reader struct {
 	opType     string
 }
 
-func NewReader(opType string, showDetail bool, bufferSize int) *Reader {
+func NewReader(opType string, bufferSize int) *Reader {
 
 	if bufferSize < defaultReadMinBufferSize {
 		bufferSize = defaultReadMinBufferSize
@@ -22,7 +22,6 @@ func NewReader(opType string, showDetail bool, bufferSize int) *Reader {
 	}
 	return &Reader{
 		bufferSize: bufferSize,
-		showDetail: showDetail,
 		opType:     opType,
 	}
 }
